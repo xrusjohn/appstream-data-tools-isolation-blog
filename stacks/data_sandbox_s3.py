@@ -4,20 +4,20 @@
 import os
 import json
 from aws_cdk import (
-    core,
     aws_ssm as ssm,
     aws_s3_deployment as s3_deployment,
     aws_s3 as s3,
-    aws_cloudformation as cfn
+    NestedStack,
+    Duration,
+    Aws
 )
-from aws_cdk.core import Aws
-
+from constructs import Construct
 current_dir = os.path.dirname(__file__)
 
 
-class S3Stack(cfn.NestedStack):
+class S3Stack(NestedStack):
 
-    def __init__(self, scope: core.Construct, id: str, aws_region='', **kwargs) -> None:
+    def __init__(self, scope: Construct, id: str, aws_region='', **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
 

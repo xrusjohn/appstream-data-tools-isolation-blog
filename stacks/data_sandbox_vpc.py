@@ -4,13 +4,13 @@
 import os
 from aws_cdk import (
     aws_ec2 as ec2,
-    core,
-    aws_cloudformation as cfn
+    NestedStack
 )
+from constructs import Construct
 
 
-class VPCStack(cfn.NestedStack):
-    def __init__(self, scope: core.Construct, id: str, aws_region='', **kwargs) -> None:
+class VPCStack(NestedStack):
+    def __init__(self, scope: Construct, id: str, aws_region='', **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
         
         #parameters
@@ -20,7 +20,7 @@ class VPCStack(cfn.NestedStack):
         self.vpc = ec2.Vpc(self, "vpc",
           cidr=vpc_cidr,
           subnet_configuration=[
-              ec2.SubnetConfiguration(name='Isolated', subnet_type=ec2.SubnetType.ISOLATED)]
+              ec2.SubnetConfiguration(name='Isolated', subnet_type=ec2.SubnetType.PRIVATE_ISOLATED)]
           )
 
         # Build VPC endpoints

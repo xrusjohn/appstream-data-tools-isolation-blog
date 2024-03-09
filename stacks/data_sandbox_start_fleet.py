@@ -5,20 +5,22 @@ import os
 from aws_cdk import (
     aws_appstream as appstream,
     aws_ec2 as ec2,
-    core,
     aws_iam as iam,
     aws_lambda as _lambda,
     aws_logs as logs,
     aws_cloudformation as cfn,
-    custom_resources as cr
+    custom_resources as cr,
+    NestedStack,
+    Duration,
+    Aws
 )
-from aws_cdk.core import Aws
+from constructs import Construct
 
 current_dir = os.path.dirname(__file__)
 
 
-class AppstreamStartFleetStack(cfn.NestedStack):
-    def __init__(self, scope: core.Construct, id: str, aws_region='', appstreamrole='', **kwargs) -> None:
+class AppstreamStartFleetStack(NestedStack):
+    def __init__(self, scope: Construct, id: str, aws_region='', appstreamrole='', **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
         
         #parameters

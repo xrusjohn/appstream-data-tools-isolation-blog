@@ -3,15 +3,18 @@
 
 import os
 from aws_cdk import (
-    core,
     aws_iam as iam,
-    aws_cloudformation as cfn
+    aws_cloudformation as cfn,
+    NestedStack,
+    Duration,
+    Aws
 )
-from aws_cdk.core import Aws
+from constructs import Construct
 
 
-class SamlStack(cfn.NestedStack):
-    def __init__(self, scope: core.Construct, id: str, aws_region='', **kwargs) -> None:
+
+class SamlStack(NestedStack):
+    def __init__(self, scope: Construct, id: str, aws_region='', **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
         
         #parameters
@@ -41,7 +44,7 @@ class SamlStack(cfn.NestedStack):
             id='saml-role',
             description='Role for SAML',
             role_name=f'{Aws.REGION}-appstream-saml-role',
-            max_session_duration=core.Duration.seconds(3600),
+            max_session_duration=Duration.seconds(3600),
             assumed_by=Federated_Prin_with_conditionb_obj,
             inline_policies = saml_inline_policies
             )

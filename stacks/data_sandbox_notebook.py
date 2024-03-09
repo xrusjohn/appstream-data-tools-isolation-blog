@@ -4,16 +4,18 @@
 import os
 from aws_cdk import (
     aws_ec2 as ec2,
-    core,
     aws_iam as iam,
     aws_sagemaker as sagemaker,
     aws_kms as kms,
-    aws_cloudformation as cfn
+    NestedStack,
+    Duration,
+    RemovalPolicy,
+    Aws
 )
-from aws_cdk.core import Aws
+from constructs import Construct
 
-class NotebookStack(cfn.NestedStack):
-    def __init__(self, scope: core.Construct, id: str, aws_region='', vpc='', s3stack='', appstreamsg='', **kwargs) -> None:
+class NotebookStack(NestedStack):
+    def __init__(self, scope: Construct, id: str, aws_region='', vpc='', s3stack='', appstreamsg='', **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
         
         # build sagemaker notebook
@@ -23,7 +25,7 @@ class NotebookStack(cfn.NestedStack):
             self,
             id='notebook-kms-key',
             alias='notebook-kms',
-            removal_policy=core.RemovalPolicy.RETAIN,
+            removal_policy=RemovalPolicy.RETAIN,
             enabled=True,
             enable_key_rotation=True,
             policy=iam.PolicyDocument(
@@ -77,7 +79,7 @@ class NotebookStack(cfn.NestedStack):
               kms_key_id=notebook_kms.key_arn,
               root_access='Disabled',
               direct_internet_access='Disabled',
-              subnet_id=vpc.select_subnets(subnet_type=ec2.SubnetType.ISOLATED).subnet_ids[0],
+              subnet_id=vpc.select_subnets(subnet_type=ec2.SubnetType.PRIVATE_ISOLATED).subnet_ids[0],
               security_group_ids=[self.notebook_security_group.security_group_id],
               volume_size_in_gb=20
               )

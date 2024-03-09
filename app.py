@@ -4,10 +4,9 @@
 #!/usr/bin/env python3
 import os
 import logging
-import boto3
+import aws_cdk as cdk
 
 # from typing import Type
-from aws_cdk import core
 from stacks.data_sandbox_vpc import VPCStack
 from stacks.data_sandbox_s3 import S3Stack
 from stacks.data_sandbox_service_roles import AppstreamServiceRolesStack
@@ -16,15 +15,15 @@ from stacks.data_sandbox_start_fleet import AppstreamStartFleetStack
 from stacks.data_sandbox_notebook import NotebookStack
 from stacks.data_sandbox_saml import SamlStack
 
-env = core.Environment(account=os.environ["CDK_DEFAULT_ACCOUNT"], region=os.environ["CDK_DEFAULT_REGION"])
+env = cdk.Environment(account=os.environ["CDK_DEFAULT_ACCOUNT"], region=os.environ["CDK_DEFAULT_REGION"])
 
 logger = logging.getLogger()
 
 logger.setLevel(logging.DEBUG)
 
-app = core.App()
+app = cdk.App()
 
-DataSandbox = core.Stack(app, 'DataSandbox', env=env)
+DataSandbox = cdk.Stack(app, 'DataSandbox', env=env)
 
 vpcstack = VPCStack(DataSandbox, 'vpc-stack')
 s3stack = S3Stack(DataSandbox, 's3-stack')

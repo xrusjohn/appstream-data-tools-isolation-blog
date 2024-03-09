@@ -5,21 +5,23 @@ import os
 from aws_cdk import (
     aws_appstream as appstream,
     aws_ec2 as ec2,
-    core,
     aws_iam as iam,
     aws_lambda as _lambda,
     aws_logs as logs,
     aws_cloudformation as cfn,
     custom_resources as cr,
-    aws_s3 as s3
+    aws_s3 as s3,
+    NestedStack,
+    Duration,
+    Aws
 )
-from aws_cdk.core import Aws
+from constructs import Construct
 
 current_dir = os.path.dirname(__file__)
 
 
-class AppstreamStack(cfn.NestedStack):
-    def __init__(self, scope: core.Construct, id: str, aws_region='', vpc='', s3stack='', **kwargs) -> None:
+class AppstreamStack(NestedStack):
+    def __init__(self, scope: Construct, id: str, aws_region='', vpc='', s3stack='', **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
         
         #parameters
@@ -40,7 +42,7 @@ class AppstreamStack(cfn.NestedStack):
             self,
             id='appstream-role',
             description='Role for the AppStream fleet',
-            max_session_duration=core.Duration.seconds(3600),
+            max_session_duration=Duration.seconds(3600),
             assumed_by=iam.ServicePrincipal('appstream.amazonaws.com'),
             inline_policies={
                 'AllowSSMAccess': iam.PolicyDocument(
@@ -78,7 +80,7 @@ class AppstreamStack(cfn.NestedStack):
              vpc_config=appstream.CfnFleet.VpcConfigProperty(
                  security_group_ids=[self.appstream_security_group.security_group_id],
                  subnet_ids=vpc.select_subnets(
-                     subnet_type=ec2.SubnetType.ISOLATED).subnet_ids))
+                     subnet_type=ec2.SubnetType.PRIVATE_ISOLATED).subnet_ids))
 
         appstream_stack = appstream.CfnStack(self, 'AppStreamStack',
              description='AppStream stack for Data Sandbox',
@@ -152,7 +154,7 @@ class AppstreamStack(cfn.NestedStack):
             self,
             id='lambda-role',
             description='Role Data Sandbox lambda',
-            max_session_duration=core.Duration.seconds(3600),
+            max_session_duration=Duration.seconds(3600),
             role_name=f'data-sandbox-{Aws.REGION}-lambda-role',
             assumed_by=iam.ServicePrincipal('lambda.amazonaws.com'),
             managed_policies=[iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole"),
@@ -165,11 +167,11 @@ class AppstreamStack(cfn.NestedStack):
         # Build Lambda Function
         data_sandbox_lambda = _lambda.Function(self, 'DataSandboxLambda',
            handler='data_sandbox_lambda.lambda_handler',
-           runtime=_lambda.Runtime.PYTHON_3_8,
-           code=_lambda.Code.asset(os.path.join(current_dir, '../lambda')),
+           runtime=_lambda.Runtime.PYTHON_3_11,
+           code=_lambda.Code.from_asset(os.path.join(current_dir, '../lambda')),
            role=lambda_role,
            memory_size=256,
-           timeout=core.Duration.seconds(60),
+           timeout=Duration.seconds(60),
            log_retention=logs.RetentionDays.THREE_MONTHS,
            log_retention_role=lambda_role
            )

@@ -23,7 +23,7 @@ logger.setLevel(logging.DEBUG)
 
 app = cdk.App()
 
-DataSandbox = cdk.Stack(app, 'DataSandbox', env=env)
+DataSandbox = cdk.Stack(app, 'appstream-notebooks', env=env)
 
 vpcstack = VPCStack(DataSandbox, 'vpc-stack')
 s3stack = S3Stack(DataSandbox, 's3-stack')

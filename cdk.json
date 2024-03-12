@@ -16,9 +16,9 @@
   },
   "context": {
     "vpc_cidr": "10.10.0.0/16",
-    "appstream_image_name": "DataSandbox",
+    "appstream_image_name": "datasandbox",
     "idp_name": "idp_datasandbox",
-    "appstream_environment_name": "datasandbox",
+    "appstream_environment_name": "appstream-notebook",
     "appstream_instance_type": "stream.standard.small",
     "appstream_fleet_type": "ON_DEMAND",
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,

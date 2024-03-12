@@ -31,6 +31,31 @@ class NotebookStack(NestedStack):
             policy=iam.PolicyDocument(
                 statements=[
                     iam.PolicyStatement(
+                        sid="Allow access for Key Administrators",
+                        effect=iam.Effect.ALLOW,
+                        actions=[
+                            "kms:Create*",
+                            "kms:Describe*",
+                            "kms:Enable*",
+                            "kms:List*",
+                            "kms:Put*",
+                            "kms:Update*",
+                            "kms:Revoke*",
+                            "kms:Disable*",
+                            "kms:Get*",
+                            "kms:Delete*",
+                            "kms:TagResource",
+                            "kms:UntagResource",
+                            "kms:ScheduleKeyDeletion",
+                            "kms:CancelKeyDeletion"
+                        ],
+                        resources=['*'],
+                        principals=[
+                            iam.ArnPrincipal(f"arn:aws:iam::{Aws.ACCOUNT_ID}:root")
+                        ]
+                    ),
+                    iam.PolicyStatement(
+                        sid="Allow use of the key",
                         effect=iam.Effect.ALLOW,
                         actions=[
                         "kms:Encrypt",
@@ -44,6 +69,7 @@ class NotebookStack(NestedStack):
                             iam.ArnPrincipal(f"arn:aws:iam::{Aws.ACCOUNT_ID}:root")
                         ]
                     )
+
                 ]
             )
         )

@@ -18,7 +18,7 @@ class VPCStack(NestedStack):
 
         # Build VPC
         self.vpc = ec2.Vpc(self, "vpc",
-          cidr=vpc_cidr,
+          ip_addresses=ec2.IpAddresses.cidr(vpc_cidr),
           subnet_configuration=[
               ec2.SubnetConfiguration(name='Isolated', subnet_type=ec2.SubnetType.PRIVATE_ISOLATED)]
           )
